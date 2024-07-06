@@ -1,0 +1,66 @@
+{
+	"arena" : 
+	{
+		"entities" : 
+		{
+			"prez::Eyebot" : 
+			{
+				"drawing" : 
+				{
+					"color" : 
+					{
+						"a" : 255,
+						"b" : 0,
+						"g" : 0,
+						"r" : 0
+					},
+					"radius" : 0.30000001192092896
+				}
+			}
+		},
+		"size" : 
+		{
+			"x" : 20.0,
+			"y" : 9.0,
+			"z" : 20.0
+		}
+	},
+	"camera" : 
+	{
+		"fovy" : 45.0,
+		"position" : 
+		{
+			"x" : 10.0,
+			"y" : 10.0,
+			"z" : 10.0
+		},
+		"projection" : 0,
+		"target" : 
+		{
+			"x" : 0.0,
+			"y" : 0.0,
+			"z" : 0.0
+		},
+		"up" : 
+		{
+			"x" : 0.0,
+			"y" : 1.0,
+			"z" : 0.0
+		}
+	},
+	"window" : 
+	{
+		"background_color" : 
+		{
+			"a" : 255,
+			"b" : 255,
+			"g" : 255,
+			"r" : 255
+		},
+		"fps" : 10,
+		"height" : 600,
+		"icon" : "/lib/locale/en_US.UTF-8/LC_CTYPE",
+		"title" : "/lib/locale/en_US/LC_CTYPE",
+		"width" : 800
+	}
+}
