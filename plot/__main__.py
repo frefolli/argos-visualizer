@@ -28,6 +28,8 @@ def SeriesDistanceFromTarget(series: dict):
     if original_length > min_length:
       Ys = plot.metrics.ApplyMovingAverageCompression.run(input=Ys, length=min_length)
     matplotlib.pyplot.plot(Xs, Ys, label=("%s (original_length=%s)" % (i, original_length)))
+  matplotlib.pyplot.xlabel('Timestamp')
+  matplotlib.pyplot.ylabel('Mean Distance From Target')
 
 def do_series(config: argparse.Namespace):
   series = {}
