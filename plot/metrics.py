@@ -27,3 +27,18 @@ class GetMaxDistances(plot.generics.ServiceObject[dict[str, numpy.ndarray]]):
   def exec(self) -> dict[str, numpy.ndarray]:
     self.distances: dict
     return {ID:numpy.max(numpy.array(list(self.distances[ID].values())), axis=0) for ID in self.distances}
+
+class GetMeanDistanceFromTarget(plot.generics.ServiceObject[numpy.ndarray]):
+  def exec(self) -> numpy.ndarray:
+    self.drones: dict
+    return numpy.mean(numpy.array([drone.DistanceFromTarget for drone in self.drones.values()]), axis=0)
+
+class ApplyMovingAverageCompression(plot.generics.ServiceObject[numpy.ndarray]):
+  def exec(self) -> numpy.ndarray:
+    self.input: numpy.ndarray
+    self.length: int
+    W = len(self.input) - self.length + 1
+    return numpy.array([
+      numpy.mean(self.input[i : i + W])
+      for i in range(self.length)
+    ])

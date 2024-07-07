@@ -8,6 +8,7 @@ import plot.metrics
 import matplotlib.pyplot
 import matplotlib.figure
 import pandas
+import os
 
 def plotter(func):
   def wrapper(*args, **kwargs):
@@ -18,56 +19,30 @@ def plotter(func):
     matplotlib.pyplot.close()
   return wrapper
 
-def plot_drone_metrics(ID: str, df: pandas.DataFrame, x: str, y: str) -> None:
-  matplotlib.pyplot.plot(df[x], df[y], label=ID)
-
-def plot_drones_metrics(drones: dict, x: str, y: str) -> None:
-  for ID in drones:
-    plot_drone_metrics(ID, drones[ID], x, y)
-  matplotlib.pyplot.xlabel(x)
-  matplotlib.pyplot.ylabel(y)
-
 @plotter
-def plot_drones_distance_from_target_over_time(drones: dict) -> None:
-  plot_drones_metrics(drones, 'Timestamp', 'DistanceFromTarget')
+def SeriesDistanceFromTarget(series: dict):
+  min_length = min([len(serie) for serie in series.values()])
+  Xs = range(min_length)
+  for i, Ys in series.items():
+    original_length = len(Ys)
+    if original_length > min_length:
+      Ys = plot.metrics.ApplyMovingAverageCompression.run(input=Ys, length=min_length)
+    matplotlib.pyplot.plot(Xs, Ys, label=("%s (original_length=%s)" % (i, original_length)))
 
-@plotter
-def plot_drones_speed_over_time(drones: dict) -> None:
-  plot_drones_metrics(drones, 'Timestamp', 'Speed')
-
-@plotter
-def plot_drones_min_distance_from_drones_over_time(drones: dict) -> None:
-  plot_drones_metrics(drones, 'Timestamp', 'MinDistanceFromDrones')
-
-@plotter
-def plot_drones_mean_distance_from_drones_over_time(drones: dict) -> None:
-  plot_drones_metrics(drones, 'Timestamp', 'MeanDistanceFromDrones')
-
-@plotter
-def plot_drones_max_distance_from_drones_over_time(drones: dict) -> None:
-  plot_drones_metrics(drones, 'Timestamp', 'MaxDistanceFromDrones')
-
-def do_action():
-  drones = plot.loaders.DroneLogsLoader.run(path="./out")
-  targets = plot.loaders.TargetsLogLoader.run(path="./out")
-
-  distances = plot.metrics.GetDistances.run(drones=drones)
-  min_distances = plot.metrics.GetMinDistances.run(distances=distances)
-  mean_distances = plot.metrics.GetMeanDistances.run(distances=distances)
-  max_distances = plot.metrics.GetMaxDistances.run(distances=distances)
-  for ID in drones:
-    drones[ID]['MinDistanceFromDrones'] = min_distances[ID]
-    drones[ID]['MeanDistanceFromDrones'] = mean_distances[ID]
-    drones[ID]['MaxDistanceFromDrones'] = max_distances[ID]
-
-  plot_drones_distance_from_target_over_time(drones)
-  plot_drones_speed_over_time(drones)
-  plot_drones_min_distance_from_drones_over_time(drones)
-  plot_drones_mean_distance_from_drones_over_time(drones)
-  plot_drones_max_distance_from_drones_over_time(drones)
+def do_series(config: argparse.Namespace):
+  series = {}
+  for i in os.listdir("archive/outs/"):
+    basepath: str = os.path.join("archive/outs/", i)
+    drones = plot.loaders.DroneLogsLoader.run(path=basepath)
+    targets = plot.loaders.TargetsLogLoader.run(path=basepath)
+    mean_distance_from_target = plot.metrics.GetMeanDistanceFromTarget.run(drones=drones)
+    assert(len(drones['sp0'].Timestamp) == len(mean_distance_from_target))
+    series[i] = mean_distance_from_target
+  SeriesDistanceFromTarget(series)
 
 if __name__ == "__main__":
   action_map: dict[str, typing.Callable[[argparse.Namespace], None]] = {
+    'series': do_series
   }
 
   cli = argparse.ArgumentParser()
