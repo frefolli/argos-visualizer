@@ -29,3 +29,7 @@ Install `raylib jsoncpp`
 Make sure that you have a `out` directory from `argos-experiments` in the current directory and use `make run` or call the executable directly as `./builddir/main.exe`.
 
 ![Example.jpg](Example.jpg)
+
+# Plotting
+
+`python3 -m plot -h` to get some help.
