@@ -4,32 +4,8 @@ import argparse
 import logging
 import plot.loaders
 import plot.metrics
-
-import matplotlib.pyplot
-import matplotlib.figure
-import pandas
+import plot.plotters
 import os
-
-def plotter(func):
-  def wrapper(*args, **kwargs):
-    fig = matplotlib.pyplot.figure(figsize=(10, 10))
-    func(*args, **kwargs)
-    matplotlib.pyplot.legend()
-    matplotlib.pyplot.savefig(func.__qualname__)
-    matplotlib.pyplot.close()
-  return wrapper
-
-@plotter
-def SeriesDistanceFromTarget(series: dict):
-  min_length = min([len(serie) for serie in series.values()])
-  Xs = range(min_length)
-  for i, Ys in series.items():
-    original_length = len(Ys)
-    if original_length > min_length:
-      Ys = plot.metrics.ApplyMovingAverageCompression.run(input=Ys, length=min_length)
-    matplotlib.pyplot.plot(Xs, Ys, label=("%s (original_length=%s)" % (i, original_length)))
-  matplotlib.pyplot.xlabel('Timestamp')
-  matplotlib.pyplot.ylabel('Mean Distance From Target')
 
 def do_series(config: argparse.Namespace):
   series = {}
@@ -37,10 +13,10 @@ def do_series(config: argparse.Namespace):
     basepath: str = os.path.join("archive/outs/", i)
     drones = plot.loaders.DroneLogsLoader.run(path=basepath)
     targets = plot.loaders.TargetsLogLoader.run(path=basepath)
-    mean_distance_from_target = plot.metrics.GetMeanDistanceFromTarget.run(drones=drones)
+    mean_distance_from_target = plot.metrics.__getattribute__("Compute%s" % config.function).run(drones=drones, targets=targets)
     assert(len(drones['sp0'].Timestamp) == len(mean_distance_from_target))
     series[i] = mean_distance_from_target
-  SeriesDistanceFromTarget(series)
+  plot.plotters.__getattribute__("PlotSeries%s" % config.function)(series)
 
 if __name__ == "__main__":
   action_map: dict[str, typing.Callable[[argparse.Namespace], None]] = {
@@ -49,6 +25,7 @@ if __name__ == "__main__":
 
   cli = argparse.ArgumentParser()
   cli.add_argument('verb', type=str, choices=action_map.keys(), help='action to perform')
+  cli.add_argument('-f', '--function', type=str, default='MeanDistanceFromTarget', choices=['MeanDistanceFromTarget', 'MeanTargetDensityOverTime', 'MeanTargetSwitchOverTime'], help='function to use for generating a compared study between multiple runs.')
   cli.add_argument('-v', '--verbose', action='store_true', default=False, help='verbose output')
   config = cli.parse_args(sys.argv[1:])
 
