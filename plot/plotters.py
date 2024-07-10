@@ -1,5 +1,4 @@
 import matplotlib.pyplot
-import plot.metrics
 
 def plotter(func):
   def wrapper(*args, **kwargs):
@@ -12,36 +11,24 @@ def plotter(func):
 
 @plotter
 def PlotSeriesMeanDistanceFromTarget(series: dict):
-  min_length = min([len(serie) for serie in series.values()])
-  Xs = range(min_length)
   for i, Ys in series.items():
-    original_length = len(Ys)
-    if original_length > min_length:
-      Ys = plot.metrics.ApplyMovingAverageCompression.run(input=Ys, length=min_length)
-    matplotlib.pyplot.plot(Xs, Ys, label=("%s (original_length=%s)" % (i, original_length)))
+    Xs = range(Ys.size)
+    matplotlib.pyplot.plot(Xs, Ys, label=("%s" % (i)))
   matplotlib.pyplot.xlabel('Timestamp')
   matplotlib.pyplot.ylabel('Mean Distance From Target')
 
 @plotter
 def PlotSeriesMeanTargetDensityOverTime(series: dict):
-  min_length = min([len(serie) for serie in series.values()])
-  Xs = range(min_length)
   for i, Ys in series.items():
-    original_length = len(Ys)
-    if original_length > min_length:
-      Ys = plot.metrics.ApplyMovingAverageCompression.run(input=Ys, length=min_length)
-    matplotlib.pyplot.plot(Xs, Ys, label=("%s (original_length=%s)" % (i, original_length)))
+    Xs = range(Ys.size)
+    matplotlib.pyplot.plot(Xs, Ys, label=("%s" % (i)))
   matplotlib.pyplot.xlabel('Timestamp')
   matplotlib.pyplot.ylabel('Mean Target Density')
 
 @plotter
 def PlotSeriesMeanTargetSwitchOverTime(series: dict):
-  min_length = min([len(serie) for serie in series.values()])
-  Xs = range(min_length)
   for i, Ys in series.items():
-    original_length = len(Ys)
-    if original_length > min_length:
-      Ys = plot.metrics.ApplyMovingAverageCompression.run(input=Ys, length=min_length)
-    matplotlib.pyplot.plot(Xs, Ys, label=("%s (original_length=%s)" % (i, original_length)))
+    Xs = range(Ys.size)
+    matplotlib.pyplot.plot(Xs, Ys, label=("%s" % (i)))
   matplotlib.pyplot.xlabel('Timestamp')
   matplotlib.pyplot.ylabel('Mean Target Switch')

@@ -79,3 +79,13 @@ class ComputeMeanTargetSwitchOverTime(plot.generics.ServiceObject[numpy.ndarray]
     self.targets: pandas.DataFrame
     target_densities = ComputeTargetSwitchesOverTime.run(drones=self.drones, targets=self.targets)
     return numpy.mean(numpy.array([_ for _ in target_densities.values()]), axis=0)
+
+class CompressCurveLengths(plot.generics.ServiceObject[dict[str, numpy.ndarray]]):
+  def exec(self) -> dict[str, numpy.ndarray]:
+    self.curves: dict[str, numpy.ndarray]
+    min_length = min([len(serie) for serie in self.curves.values()])
+    for i in self.curves.keys():
+      original_length = len(self.curves[i])
+      if original_length > min_length:
+        self.curves[i] = ApplyMovingAverageCompression.run(input=self.curves[i], length=min_length)
+    return self.curves
