@@ -14,9 +14,9 @@ def do_series(config: argparse.Namespace):
     basepath: str = os.path.join("archive/outs/", i)
     drones = plot.loaders.DroneLogsLoader.run(path=basepath)
     targets = plot.loaders.TargetsLogLoader.run(path=basepath)
-    mean_distance_from_target = plot.metrics.__getattribute__("Compute%s" % config.function).run(drones=drones, targets=targets)
-    assert(len(drones['sp0'].Timestamp) == len(mean_distance_from_target))
-    series[i] = mean_distance_from_target
+    metric = plot.metrics.__getattribute__("Compute%s" % config.function).run(drones=drones, targets=targets)
+    assert(len(drones['sp0'].Timestamp) == len(metric))
+    series[i] = metric
   series = plot.metrics.CompressCurveLengths.run(curves=series)
   plot.plotters.__getattribute__("PlotSeries%s" % config.function)(series)
 
@@ -28,9 +28,9 @@ def do_variants(config: argparse.Namespace):
       basepath: str = os.path.join("archive/outs/", variant, i)
       drones = plot.loaders.DroneLogsLoader.run(path=basepath)
       targets = plot.loaders.TargetsLogLoader.run(path=basepath)
-      mean_distance_from_target = plot.metrics.__getattribute__("Compute%s" % config.function).run(drones=drones, targets=targets)
-      assert(len(drones['sp0'].Timestamp) == len(mean_distance_from_target))
-      series[i] = mean_distance_from_target
+      metric = plot.metrics.__getattribute__("Compute%s" % config.function).run(drones=drones, targets=targets)
+      assert(len(drones['sp0'].Timestamp) == len(metric))
+      series[i] = metric
     series = plot.metrics.CompressCurveLengths.run(curves=series)
     data = numpy.mean(numpy.array([_ for _ in series.values()]), axis=0)
     variants[variant] = data
@@ -45,7 +45,11 @@ if __name__ == "__main__":
 
   cli = argparse.ArgumentParser()
   cli.add_argument('verb', type=str, choices=action_map.keys(), help='action to perform')
-  cli.add_argument('-f', '--function', type=str, default='MeanDistanceFromTarget', choices=['MeanDistanceFromTarget', 'MeanTargetDensityOverTime', 'MeanTargetSwitchOverTime'], help='function to use for generating a compared study between multiple runs.')
+  cli.add_argument('-f', '--function', type=str, default='MeanDistanceFromTarget', choices=[
+    'MeanDistanceFromTarget', 'MeanSpeed',
+    'MeanTargetDensityOverTime', 'MeanTargetSwitchOverTime', 'VarTargetDensityOverTime',
+    'MeanDistancesGlobally', 'MeanDistancesWithinSquadron'
+  ], help='function to use for generating a compared study between multiple runs.')
   cli.add_argument('-v', '--verbose', action='store_true', default=False, help='verbose output')
   config = cli.parse_args(sys.argv[1:])
 
