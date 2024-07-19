@@ -21,9 +21,9 @@ def append_compendium(series: dict):
     series["Target Distance"] = (Xs, Ys)
 
 BASE_COLORS = [
-  [255, 0, 0],
-  [0, 255, 0],
   [0, 0, 255],
+  [0, 255, 0],
+  [255, 0, 0],
 ]
 
 def pick_color():
@@ -61,7 +61,7 @@ def define_colors_for_curves(series: dict, group_by: list|None) -> dict:
   for key in series.keys():
     for group in group_by:
       if group in key.split('__'):
-        color = generate_new_color(colors[group], distorsion=0.4)
+        color = generate_new_color(colors[group], distorsion=0.6)
         colors[group].append(color)
         pairings[key] = color
   return {k:[_/255 for _ in v] for k,v in pairings.items()}

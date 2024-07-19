@@ -10,16 +10,16 @@ run: ./builddir/main.exe
 clean:
 	rm -r builddir
 
-plots:
-	python3 -m plot variants -f MeanDistanceFromTarget -i ${ARCHIVE} -o ${OUTPUT}
-	python3 -m plot variants -f MeanSpeed -i ${ARCHIVE} -o ${OUTPUT}
-	python3 -m plot variants -f VarTargetDensityOverTime -i ${ARCHIVE} -o ${OUTPUT}
-	python3 -m plot variants -f MeanTargetDensityOverTime -i ${ARCHIVE} -o ${OUTPUT}
-	python3 -m plot variants -f MeanTargetSwitchOverTime -i ${ARCHIVE} -o ${OUTPUT}
-	python3 -m plot variants -f MeanDistancesWithinSquadron -i ${ARCHIVE} -o ${OUTPUT}
-	python3 -m plot variants -f MinDistancesGlobally -i ${ARCHIVE} -o ${OUTPUT}
+allocator:
+	python3 -m plot variants -f MeanDistanceFromTarget #-g RANDOM NEAREST
+	python3 -m plot variants -f MeanSpeed #-g RANDOM NEAREST
+	python3 -m plot variants -f VarTargetDensityOverTime #-g RANDOM NEAREST
+	python3 -m plot variants -f MeanTargetDensityOverTime #-g RANDOM NEAREST
+	python3 -m plot variants -f MeanTargetSwitchOverTime #-g RANDOM NEAREST
+	python3 -m plot variants -f MeanDistancesWithinSquadron #-g RANDOM NEAREST
+	python3 -m plot variants -f MinDistancesGlobally #-g RANDOM NEAREST
 
-plots2:
+executor:
 	python3 -m plot variants -f MeanDistanceFromTarget -g LP GP
 	python3 -m plot variants -f MeanSpeed -g LP GP
 	python3 -m plot variants -f VarTargetDensityOverTime -g LP GP
