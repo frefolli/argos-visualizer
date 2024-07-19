@@ -13,27 +13,32 @@ class ComputeDistancesGlobally(plot.generics.ServiceObject[dict[str, dict[str, n
     self.drones: dict
     return {ID_A: {ID_B:ComputeDistance.run(A=self.drones[ID_A], B=self.drones[ID_B]) for ID_B in self.drones if ID_B != ID_A} for ID_A in self.drones}
 
-class ComputeDistancesWithinSquadron(plot.generics.ServiceObject[dict[str, dict[str, numpy.ndarray]]]):
-  def exec(self) -> dict[str, dict[str, numpy.ndarray]]:
+class ComputeMeanDistancesWithinSquadron(plot.generics.ServiceObject[numpy.ndarray]):
+  def exec(self) -> numpy.ndarray:
     self.drones: dict
-    return {ID_A: {ID_B:ComputeDistance.run(A=self.drones[ID_A], B=self.drones[ID_B]) for ID_B in self.drones if ID_B != ID_A and self.drones[ID_A].Target.iloc[-1] == self.drones[ID_B].Target.iloc[-1]} for ID_A in self.drones}
+    self.targets: pandas.DataFrame
+    results = {target:[] for target in self.targets.TargetID}
+    for i in range(len(self.drones['sp0'])):
+      distances = {target:[] for target in self.targets.TargetID}
+      for A in self.drones:
+        for B in self.drones:
+          if A != B and self.drones[A].Target[i] == self.drones[B].Target[i]:
+            distances[self.drones[B].Target[i]].append(numpy.linalg.norm([
+              self.drones[A].PosX[i] - self.drones[B].PosX[i],
+              self.drones[A].PosY[i] - self.drones[B].PosY[i],
+              self.drones[A].PosZ[i] - self.drones[B].PosZ[i],
+            ]))
+      for target in distances:
+        if len(distances[target]) == 0:
+          distances[target] = [0]
+        results[target].append(numpy.mean(distances[target]))
+    return numpy.mean(list(results.values()), axis=0)
 
 class ComputeMinDistancesGlobally(plot.generics.ServiceObject[numpy.ndarray]):
   def exec(self) -> numpy.ndarray:
     self.drones: dict
     self.distances: dict = ComputeDistancesGlobally.run(drones=self.drones)
     return numpy.min(numpy.array([numpy.min(numpy.array(list(self.distances[ID].values())), axis=0) for ID in self.distances]), axis=0)
-
-class ComputeMeanDistancesWithinSquadron(plot.generics.ServiceObject[numpy.ndarray]):
-  def exec(self) -> numpy.ndarray:
-    self.drones: dict
-    self.distances: dict = ComputeDistancesWithinSquadron.run(drones=self.drones)
-    array = []
-    for ID in self.distances:
-      obj = numpy.mean(numpy.array(list(self.distances[ID].values())), axis=0)
-      if obj.shape != ():
-        array.append(obj)
-    return numpy.mean(numpy.array(array), axis=0)
 
 class ComputeMeanDistanceFromTarget(plot.generics.ServiceObject[numpy.ndarray]):
   def exec(self) -> numpy.ndarray:

@@ -8,7 +8,6 @@ import plot.metrics
 import plot.plotters
 import os
 import numpy
-import random
 
 TARGET_DISTANCE_WITHIN_SQUADRON = 2.0
 
@@ -36,7 +35,7 @@ def color_distance(A, B):
   return numpy.linalg.norm(A - B)
 
 def same_colors(A, B):
-  return color_distance(A, B) < 10
+  return color_distance(A, B) < 30
 
 def generate_new_color(existing_colors, distorsion = 0.1):
   base_color = existing_colors[0]
