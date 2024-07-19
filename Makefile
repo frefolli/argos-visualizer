@@ -11,13 +11,13 @@ clean:
 	rm -r builddir
 
 allocator:
-	python3 -m plot variants -f MeanDistanceFromTarget #-g RANDOM NEAREST
-	python3 -m plot variants -f MeanSpeed #-g RANDOM NEAREST
-	python3 -m plot variants -f VarTargetDensityOverTime #-g RANDOM NEAREST
-	python3 -m plot variants -f MeanTargetDensityOverTime #-g RANDOM NEAREST
-	python3 -m plot variants -f MeanTargetSwitchOverTime #-g RANDOM NEAREST
-	python3 -m plot variants -f MeanDistancesWithinSquadron #-g RANDOM NEAREST
-	python3 -m plot variants -f MinDistancesGlobally #-g RANDOM NEAREST
+	python3 -m plot variants -f MeanDistanceFromTarget -g RANDOM NEAREST
+	python3 -m plot variants -f MeanSpeed -g RANDOM NEAREST
+	python3 -m plot variants -f VarTargetDensityOverTime -g RANDOM NEAREST
+	python3 -m plot variants -f MeanTargetDensityOverTime -g RANDOM NEAREST
+	python3 -m plot variants -f MeanTargetSwitchOverTime -g RANDOM NEAREST
+	python3 -m plot variants -f MeanDistancesWithinSquadron -g RANDOM NEAREST
+	python3 -m plot variants -f MinDistancesGlobally -g RANDOM NEAREST
 
 executor:
 	python3 -m plot variants -f MeanDistanceFromTarget -g LP GP
