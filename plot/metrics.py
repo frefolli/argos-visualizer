@@ -18,11 +18,11 @@ class ComputeDistancesWithinSquadron(plot.generics.ServiceObject[dict[str, dict[
     self.drones: dict
     return {ID_A: {ID_B:ComputeDistance.run(A=self.drones[ID_A], B=self.drones[ID_B]) for ID_B in self.drones if ID_B != ID_A and self.drones[ID_A].Target.iloc[-1] == self.drones[ID_B].Target.iloc[-1]} for ID_A in self.drones}
 
-class ComputeMeanDistancesGlobally(plot.generics.ServiceObject[numpy.ndarray]):
+class ComputeMinDistancesGlobally(plot.generics.ServiceObject[numpy.ndarray]):
   def exec(self) -> numpy.ndarray:
     self.drones: dict
     self.distances: dict = ComputeDistancesGlobally.run(drones=self.drones)
-    return numpy.mean(numpy.array([numpy.mean(numpy.array(list(self.distances[ID].values())), axis=0) for ID in self.distances]), axis=0)
+    return numpy.min(numpy.array([numpy.min(numpy.array(list(self.distances[ID].values())), axis=0) for ID in self.distances]), axis=0)
 
 class ComputeMeanDistancesWithinSquadron(plot.generics.ServiceObject[numpy.ndarray]):
   def exec(self) -> numpy.ndarray:
